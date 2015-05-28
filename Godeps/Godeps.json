@@ -1,0 +1,5 @@
+{
+	"ImportPath": "github.com/beergarden/beerserver",
+	"GoVersion": "go1.4.2",
+	"Deps": []
+}

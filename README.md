@@ -1,9 +1,33 @@
 # beerserver
 
+## Installation
+
+- go
+- Heroku Toolbelt
+
+```
+go get github.com/tools/godep
+```
+
 ## Usage
 
 ```
-go run server.go
+go run web.go
 ```
 
-and open http://localhost:5000
+or
+
+```
+go install
+beerserver
+```
+
+and open http://localhost:3000
+
+
+## Deployment to Heroku
+
+```
+git push heroku master
+heroku open
+```

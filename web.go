@@ -1,27 +1,47 @@
 package main
 
 import (
-	"fmt"
-	"html"
+	"github.com/joho/godotenv"
+	"gopkg.in/mgo.v2"
 	"log"
 	"net/http"
 	"os"
+	// "gopkg.in/mgo.v2/bson"
 )
 
 const DefaultPort = ":3000"
 const EnvPort = "PORT"
+const DatabaseName = "beerserver"
 
 func main() {
-	http.HandleFunc("/", Index)
+	// Load environmental variables.
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 
+	// Connect to database.
+	session, err := mgo.Dial(os.Getenv("MONGOHQ_URL"))
+	if err != nil {
+		panic(err)
+	}
+	defer session.Close()
+	// ??
+	session.SetMode(mgo.Monotonic, true)
+
+	// Set up router.
+	routes := NewRoutes(session.DB(DatabaseName))
+	router := NewRouter()
+	router.GET("/", routes.Index)
+	router.GET("/channels", routes.GetChannels)
+	router.POST("/channels", routes.CreateChannel)
+
+	// Start server.
 	port := DefaultPort
 	if os.Getenv(EnvPort) != "" {
 		port = ":" + os.Getenv(EnvPort)
 	}
+	log.Fatal(http.ListenAndServe(port, router))
 
-	log.Fatal(http.ListenAndServe(port, nil))
-}
-
-func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
+	log.Println("Listening on %v", port)
 }

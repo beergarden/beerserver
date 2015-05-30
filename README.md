@@ -12,12 +12,6 @@ go get github.com/tools/godep
 ## Usage
 
 ```
-go run web.go
-```
-
-or
-
-```
 go install
 beerserver
 ```

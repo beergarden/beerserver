@@ -1,5 +1,11 @@
 {
 	"ImportPath": "github.com/beergarden/beerserver",
 	"GoVersion": "go1.4.2",
-	"Deps": []
+	"Deps": [
+		{
+			"ImportPath": "gopkg.in/mgo.v2",
+			"Comment": "r2015.01.24-35-g01ee097",
+			"Rev": "01ee097136da162d1dd3c9b44fbdf3abf4fd6552"
+		}
+	]
 }

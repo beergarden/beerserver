@@ -6,12 +6,11 @@ import (
 	"log"
 	"net/http"
 	"os"
-	// "gopkg.in/mgo.v2/bson"
+	"regexp"
 )
 
 const DefaultPort = ":3000"
 const EnvPort = "PORT"
-const DatabaseName = "beerserver"
 
 func main() {
 	// Load environmental variables.
@@ -21,7 +20,12 @@ func main() {
 	}
 
 	// Connect to database.
-	session, err := mgo.Dial(os.Getenv("MONGOLAB_URI"))
+	connectionString := os.Getenv("MONGOLAB_URI")
+	uriPattern := regexp.MustCompile("^(.+)\\/(\\w+)$")
+	matches := uriPattern.FindStringSubmatch(connectionString)
+	dbName := matches[2]
+	log.Printf("Database URI: %v name: %v", connectionString, dbName)
+	session, err := mgo.Dial(connectionString)
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +34,7 @@ func main() {
 	session.SetMode(mgo.Monotonic, true)
 
 	// Set up router.
-	routes := NewRoutes(session.DB(DatabaseName))
+	routes := NewRoutes(session.DB(dbName))
 	router := NewRouter()
 	router.GET("/", routes.Index)
 	router.GET("/channels", routes.GetChannels)

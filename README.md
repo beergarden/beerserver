@@ -2,14 +2,23 @@
 
 An API server for home brewery.
 
-## Prerequisite:
+## Prerequisite
 
 - Go
 - [Go workspace](https://golang.org/doc/code.html)
-- Heroku Toolbelt (for deployment to Heroku)
 - [Godep](https://github.com/tools/godep) `go get github.com/tools/godep`
+- Heroku Toolbelt (for deployment to Heroku)
+- MongoDB
 
 ## Usage
+
+Create `.env`:
+
+```
+MONGOLAB_URI=localhost:27017/beerserver
+```
+
+Run server:
 
 ```
 go install && beerserver

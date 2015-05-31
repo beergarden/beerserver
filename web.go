@@ -21,7 +21,7 @@ func main() {
 	}
 
 	// Connect to database.
-	session, err := mgo.Dial(os.Getenv("MONGOHQ_URL"))
+	session, err := mgo.Dial(os.Getenv("MONGOLAB_URI"))
 	if err != nil {
 		panic(err)
 	}

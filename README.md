@@ -1,23 +1,54 @@
 # beerserver
 
-## Installation
+An API server for home brewery.
 
-- go
-- Heroku Toolbelt
+## Prerequisite:
 
-```
-go get github.com/tools/godep
-```
+- Go
+- [Go workspace](https://golang.org/doc/code.html)
+- Heroku Toolbelt (for deployment to Heroku)
+- [Godep](https://github.com/tools/godep) `go get github.com/tools/godep`
 
 ## Usage
 
 ```
-go install
-beerserver
+go install && beerserver
 ```
 
 and open http://localhost:3000
 
+## API
+
+### Channels
+
+```
+GET /channels
+GET /channels/{id} {"name": "Beer Temperture"}
+POST /channels
+```
+
+## Datapoints
+
+```
+GET /channels/{channelId}/datapoints
+POST /channels/{channelId}/datapoints {"at": "2012-04-23T18:25:43.511Z", value: 123.456}
+```
+
+## Test
+
+```
+go test
+```
+
+## Dependencies
+
+Dependencies are managed with [Godep](https://github.com/tools/godep). Whenever you add new dependency, make sure to:
+
+```
+godep save
+```
+
+and **check the content of `Godep` directory into Git**.
 
 ## Deployment to Heroku
 

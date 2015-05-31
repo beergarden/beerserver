@@ -3,24 +3,58 @@ package main
 import (
 	"log"
 	"net/http"
+	"regexp"
 )
 
+type RouteParams map[string]string
+
 // http://blog.golang.org/error-handling-and-go
-type Handler func(http.ResponseWriter, *http.Request) error
+type Handler func(http.ResponseWriter, *http.Request, RouteParams) error
 
 // -- Route
 type Route struct {
-	method  string
-	pattern string
-	handler Handler
+	method     string
+	pattern    *regexp.Regexp
+	paramNames []string
+	handler    Handler
 }
 
-func NewRoute(method string, pattern string, handler Handler) *Route {
-	return &Route{method, pattern, handler}
+func NewRoute(method string, patternString string, handler Handler) *Route {
+	pattern, paramNames := parsePattern(patternString)
+	return &Route{method, pattern, paramNames, handler}
 }
 
-func (route *Route) matches(method string, pattern string) bool {
-	return route.method == method && route.pattern == pattern
+func parsePattern(patternString string) (*regexp.Regexp, []string) {
+	// Extract param names.
+	// "/foo/{fooId}/bar/{barId}" -> []string{"fooId", "barId"}
+	paramPattern := regexp.MustCompile("\\{([^\\}]+)\\}")
+	matches := paramPattern.FindAllStringSubmatch(patternString, -1)
+	paramNames := make([]string, len(matches))
+	for i, value := range matches {
+		paramNames[i] = value[1]
+	}
+	// Create a regexp to extract params from path.
+	// "/foo/{fooId}/bar/{barId}" -> "/foo/([a-zA-Z0-9]+)/bar/([a-zA-Z0-9]+)"
+	pathPatternString := paramPattern.ReplaceAllString(patternString, "([a-zA-Z0-9]+)")
+	pattern := regexp.MustCompile("^" + pathPatternString + "$")
+
+	return pattern, paramNames
+}
+
+// Check if the route matches given method and path
+func (route *Route) matches(method string, path string) (bool, RouteParams) {
+	matched := route.method == method && route.pattern.MatchString(path)
+	if !matched {
+		return false, nil
+	}
+
+	parts := route.pattern.FindStringSubmatch(path)
+	params := make(RouteParams)
+	for i, paramName := range route.paramNames {
+		params[paramName] = parts[i+1]
+	}
+
+	return matched, params
 }
 
 // -- Router
@@ -35,30 +69,31 @@ func NewRouter() *Router {
 // Router implements http.ServeMux.
 func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Printf("[%s] %s", r.Method, r.URL.Path)
-	route := router.findRoute(r.Method, r.URL.Path)
+	route, params := router.findRoute(r.Method, r.URL.Path)
 	if route == nil {
 		http.NotFound(w, r)
 		return
 	}
 
-	err := route.handler(w, r)
+	err := route.handler(w, r, params)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 	}
 }
 
-func (router *Router) findRoute(method string, pattern string) *Route {
+func (router *Router) findRoute(method string, pattern string) (*Route, RouteParams) {
 	for _, route := range router.routes {
-		if route.matches(method, pattern) {
-			return route
+		matched, params := route.matches(method, pattern)
+		if matched {
+			return route, params
 		}
 	}
-	return nil
+	return nil, nil
 }
 
 // Add a handler for specified method.
 func (router *Router) AddHandler(method string, pattern string, handler Handler) {
-	route := &Route{method, pattern, handler}
+	route := NewRoute(method, pattern, handler)
 	router.routes = append(router.routes, route)
 }
 

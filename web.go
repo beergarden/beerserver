@@ -35,6 +35,9 @@ func main() {
 	router.GET("/", routes.Index)
 	router.GET("/channels", routes.GetChannels)
 	router.POST("/channels", routes.CreateChannel)
+	router.GET("/channels/{id}", routes.GetChannel)
+	router.GET("/channels/{channelId}/datapoints", routes.GetDatapoints)
+	router.POST("/channels/{channelId}/datapoints", routes.CreateDatapoint)
 
 	// Start server.
 	port := DefaultPort

@@ -2,9 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"gopkg.in/mgo.v2"
-	"html"
 	"log"
 	"net/http"
 )
@@ -19,11 +17,6 @@ func NewRoutes(db *mgo.Database) *Routes {
 	channelStore := &channelStore{db}
 	datapointStore := &datapointStore{db}
 	return &Routes{channelStore, datapointStore}
-}
-
-func (routes *Routes) Index(w http.ResponseWriter, r *http.Request, params RouteParams) error {
-	fmt.Fprintf(w, "Hello, %q", html.EscapeString(r.URL.Path))
-	return nil
 }
 
 func (routes *Routes) GetChannel(w http.ResponseWriter, r *http.Request, params RouteParams) error {

@@ -12,6 +12,13 @@ An API server for home brewery.
 
 ## Usage
 
+Install dependencies:
+
+```
+go get github.com/tools/godep
+godep restore
+```
+
 Create `.env`:
 
 ```

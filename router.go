@@ -59,11 +59,14 @@ func (route *Route) matches(method string, path string) (bool, RouteParams) {
 
 // -- Router
 type Router struct {
-	routes []*Route
+	routes     []*Route
+	fileServer http.Handler
 }
 
-func NewRouter() *Router {
-	return &Router{}
+func NewRouter(staticDir string) *Router {
+	router := &Router{}
+	router.fileServer = http.FileServer(http.Dir(staticDir))
+	return router
 }
 
 // Router implements http.ServeMux.
@@ -71,7 +74,7 @@ func (router *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Printf("[%s] %s", r.Method, r.URL.Path)
 	route, params := router.findRoute(r.Method, r.URL.Path)
 	if route == nil {
-		http.NotFound(w, r)
+		router.fileServer.ServeHTTP(w, r)
 		return
 	}
 

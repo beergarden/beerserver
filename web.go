@@ -35,8 +35,7 @@ func main() {
 
 	// Set up router.
 	routes := NewRoutes(session.DB(dbName))
-	router := NewRouter()
-	router.GET("/", routes.Index)
+	router := NewRouter("static")
 	router.GET("/channels", routes.GetChannels)
 	router.POST("/channels", routes.CreateChannel)
 	router.GET("/channels/{id}", routes.GetChannel)

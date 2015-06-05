@@ -43,11 +43,33 @@ GET /channels/{id} {"name": "Beer Temperture"}
 POST /channels
 ```
 
-## Datapoints
+### Datapoints
 
 ```
 GET /channels/{channelId}/datapoints
 POST /channels/{channelId}/datapoints {"at": "2012-04-23T18:25:43.511Z", value: 123.456}
+```
+
+## Front-end development
+
+Asset files in `assets` directory are copied/compiled into `static` directory. Edit only files in `assets`.
+
+Copy static files and compile js once:
+
+```
+npm run build
+```
+
+Copy static files once, watch js files and compile them as needed:
+
+```
+npm run watch
+```
+
+or
+
+```
+npm start
 ```
 
 ## Test

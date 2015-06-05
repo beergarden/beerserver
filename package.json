@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "Cheers!",
   "scripts": {
-    "build": "mkdir -p static/js && browserify -t babelify assets/js/index.js > static/js/index.js",
+    "start": "npm run copy && webpack --watch",
+    "build": "npm run copy && webpack",
     "copy": "mkdir -p static && cp assets/index.html static/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,13 +23,15 @@
   "homepage": "https://github.com/beergarden/beerserver",
   "dependencies": {
     "flux": "^2.0.3",
+    "node-libs-browser": "^0.5.2",
     "react": "^0.13.3",
+    "react-d3-components": "^0.4.8",
     "whatwg-fetch": "^0.9.0"
   },
   "devDependencies": {
     "babel-core": "^5.5.3",
     "babel-eslint": "^3.1.13",
-    "babelify": "^6.1.2",
-    "browserify": "^10.2.3"
+    "babel-loader": "^5.1.4",
+    "webpack": "^1.9.10"
   }
 }

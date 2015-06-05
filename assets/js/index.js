@@ -1,36 +1,31 @@
 import 'whatwg-fetch';
 import React from 'react';
 
-class ChannelList extends React.Component {
-  render() {
-    const listItems = this.props.channels.map((channel) => {
-      const url = `/channels/${channel.id}/datapoints`;
-      return <li key={channel.id}><a href={url}>{channel.name}</a></li>;
+import { Dashboard } from './components';
+
+fetchChannels()
+  .then(renderChannels);
+
+function fetchChannels() {
+  return fetch('/channels')
+    .then((response) => response.json())
+    .then((channels) => Promise.all(channels.map(fetchDatapoints)));
+}
+
+function fetchDatapoints(channel) {
+  return fetch(`/channels/${channel.id}/datapoints`)
+    .then((response) => response.json())
+    .then((datapoints) => {
+      channel.datapoints = datapoints.map((d) => {
+        return { at: new Date(d.at), value: d.value };
+      });
+      return channel;
     });
-    return (
-      <ul>{listItems}</ul>
-    );
-  }
 }
 
-class Dashboard extends React.Component {
-  render() {
-    return (
-      <div>
-        <h1>Beerserver Dashboard</h1>
-        <ChannelList channels={this.props.channels} />
-      </div>
-    );
-  }
+function renderChannels(channels) {
+  React.render(
+    <Dashboard channels={channels} />,
+    document.getElementById('world')
+  );
 }
-
-fetch('/channels')
-  .then((response) => {
-    return response.json();
-  })
-  .then((channels) => {
-    React.render(
-      <Dashboard channels={channels} />,
-      document.getElementById('world')
-    );
-  });

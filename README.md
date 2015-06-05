@@ -68,6 +68,20 @@ and **check the content of `Godep` directory into Git**.
 
 ## Deployment to Heroku
 
+Use heroku-buildpack-multi:
+
+```
+heroku buildpacks:set https://github.com/ddollar/heroku-buildpack-multi.git
+```
+
+Install also `devDependencies` of `package.json`:
+
+```
+heroku config:set NPM_CONFIG_PRODUCTION=false
+```
+
+Deploy and open browser:
+
 ```
 git push heroku master
 heroku open

@@ -24,3 +24,7 @@ _testmain.go
 *.prof
 
 .env
+
+# Front
+node_modules
+static

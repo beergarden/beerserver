@@ -27,4 +27,5 @@ _testmain.go
 
 # Front
 node_modules
+npm-debug.log
 static

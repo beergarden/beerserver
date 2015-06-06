@@ -29,6 +29,8 @@ export class DatapointChart {
     const xScale = d3.time.scale()
       .domain([minX, maxX])
       .range([0, width - margin.left - margin.right]);
+    const xAxis = {label: "DateTime"};
+    const yAxis = {label: "Deg C"};
 
     const tooltipHtml = (_, data) => {
       const date = formatDate(data.x);
@@ -41,6 +43,8 @@ export class DatapointChart {
                  height={height}
                  margin={margin}
                  tooltipHtml={tooltipHtml}
+                 xAxis={xAxis}
+                 yAxis={yAxis}
                  xScale={xScale} />
     );
   }

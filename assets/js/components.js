@@ -20,12 +20,21 @@ export class DatapointChart {
     const xScale = d3.time.scale()
       .domain([minX, maxX])
       .range([0, width - margin.left - margin.right]);
+    const xAxis = {label: "DateTime"};
+    const yAxis = {label: "Deg C"};
+
+    var tooltipScatter = function(label, data) {
+	return data.y + " deg C at " + data.x;
+    };
 
     return (
       <LineChart data={data}
                  width={width}
                  height={height}
                  margin={margin}
+		 tooltipHtml={tooltipScatter}
+                 xAxis={xAxis}
+		 yAxis={yAxis}
                  xScale={xScale} />
     );
   }

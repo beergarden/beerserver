@@ -5,7 +5,7 @@
   "scripts": {
     "start": "npm run copy && webpack --watch",
     "build": "npm run copy && webpack",
-    "copy": "mkdir -p static && cp assets/index.html static/",
+    "copy": "mkdir -p static && cp assets/index.html static/ && cp -r assets/css static/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "npm run build"
   },

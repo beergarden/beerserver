@@ -62,24 +62,30 @@ export class Channel extends React.Component {
 
 export class ChannelList extends React.Component {
   render() {
+    if (!this.props.channels) {
+      return null;
+    }
+
     const listItems = this.props.channels.map((channel) => <Channel channel={channel} key={channel.id} />);
     return <div className="channel-list">{listItems}</div>;
   }
 }
 
-export class Dashboard extends React.Component {
-  constructor(...args) {
-    super(...args);
-    this.state = {
-      channel: null,
-      datapoints: []
-    };
+export class ErrorMessage extends React.Component {
+  render() {
+    if (!this.props.error) {
+      return null;
+    }
+    return <p className="error-message">Failed to fetch data: {this.props.error.toString()}</p>;
   }
+}
 
+export class Dashboard extends React.Component {
   render() {
     return (
       <div className="dashboard">
         <h1>Beerserver Dashboard</h1>
+        <ErrorMessage error={this.props.error} />
         <ChannelList channels={this.props.channels} />
       </div>
     );

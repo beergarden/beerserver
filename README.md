@@ -7,16 +7,23 @@ An API server for home brewery.
 - Go
 - [Go workspace](https://golang.org/doc/code.html)
 - [Godep](https://github.com/tools/godep) `go get github.com/tools/godep`
+- Node, NPM
 - Heroku Toolbelt (for deployment to Heroku)
 - MongoDB
 
 ## Usage
 
-Install dependencies:
+Install Go dependencies:
 
 ```
 go get github.com/tools/godep
 godep restore
+```
+
+Install Node dependencies and build assets:
+
+```
+npm install
 ```
 
 Create `.env`:

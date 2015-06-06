@@ -2,6 +2,15 @@ import React from 'react';
 import d3 from 'd3';
 import { LineChart } from 'react-d3-components';
 
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return `${year}/${month}/${day} ${hours}:${minutes}`;
+}
+
 export class DatapointChart {
   render() {
     const values = this.props.datapoints.map((d) => {
@@ -21,31 +30,28 @@ export class DatapointChart {
       .domain([minX, maxX])
       .range([0, width - margin.left - margin.right]);
 
+    const tooltipHtml = (_, data) => {
+      const date = formatDate(data.x);
+      return `${data.y} at ${date}`;
+    };
+
     return (
       <LineChart data={data}
                  width={width}
                  height={height}
                  margin={margin}
+                 tooltipHtml={tooltipHtml}
                  xScale={xScale} />
     );
   }
 }
 
 export class Channel extends React.Component {
-  formatDate(date) {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    return `${year}/${month}/${day} ${hours}:${minutes}`;
-  }
-
   render() {
     const channel = this.props.channel;
     const url = `/channels/${channel.id}/datapoints`;
     const latest = channel.datapoints[channel.datapoints.length - 1];
-    const date = this.formatDate(latest.at);
+    const date = formatDate(latest.at);
     return (
       <div className="channel">
         <h2 className="name">{channel.name}</h2>

@@ -4,11 +4,18 @@ import React from 'react';
 import { Dashboard } from './components';
 
 fetchChannels()
-  .then(renderChannels);
+  .then(renderDashboard)
+  .catch(renderError);
 
 function fetchChannels() {
   return fetch('/channels')
-    .then((response) => response.json())
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        return response.text().then((t) => Promise.reject(new Error(t)));
+      }
+    })
     .then((channels) => Promise.all(channels.map(fetchDatapoints)));
 }
 
@@ -23,9 +30,16 @@ function fetchDatapoints(channel) {
     });
 }
 
-function renderChannels(channels) {
+function renderDashboard(channels) {
   React.render(
     <Dashboard channels={channels} />,
+    document.getElementById('world')
+  );
+}
+
+function renderError(error) {
+  React.render(
+    <Dashboard error={error} />,
     document.getElementById('world')
   );
 }

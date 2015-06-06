@@ -2,6 +2,15 @@ import React from 'react';
 import d3 from 'd3';
 import { LineChart } from 'react-d3-components';
 
+function formatDate(date) {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return `${year}/${month}/${day} ${hours}:${minutes}`;
+}
+
 export class DatapointChart {
   render() {
     const values = this.props.datapoints.map((d) => {
@@ -23,8 +32,9 @@ export class DatapointChart {
     const xAxis = {label: "DateTime"};
     const yAxis = {label: "Deg C"};
 
-    var tooltipScatter = function(label, data) {
-	return data.y + " deg C at " + data.x;
+    const tooltipHtml = (_, data) => {
+      const date = formatDate(data.x);
+      return `${data.y} at ${date}`;
     };
 
     return (
@@ -32,29 +42,20 @@ export class DatapointChart {
                  width={width}
                  height={height}
                  margin={margin}
-		 tooltipHtml={tooltipScatter}
+                 tooltipHtml={tooltipHtml}
                  xAxis={xAxis}
-		 yAxis={yAxis}
+                 yAxis={yAxis}
                  xScale={xScale} />
     );
   }
 }
 
 export class Channel extends React.Component {
-  formatDate(date) {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    const day = date.getDate();
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    return `${year}/${month}/${day} ${hours}:${minutes}`;
-  }
-
   render() {
     const channel = this.props.channel;
     const url = `/channels/${channel.id}/datapoints`;
     const latest = channel.datapoints[channel.datapoints.length - 1];
-    const date = this.formatDate(latest.at);
+    const date = formatDate(latest.at);
     return (
       <div className="channel">
         <h2 className="name">{channel.name}</h2>
@@ -71,24 +72,30 @@ export class Channel extends React.Component {
 
 export class ChannelList extends React.Component {
   render() {
+    if (!this.props.channels) {
+      return null;
+    }
+
     const listItems = this.props.channels.map((channel) => <Channel channel={channel} key={channel.id} />);
     return <div className="channel-list">{listItems}</div>;
   }
 }
 
-export class Dashboard extends React.Component {
-  constructor(...args) {
-    super(...args);
-    this.state = {
-      channel: null,
-      datapoints: []
-    };
+export class ErrorMessage extends React.Component {
+  render() {
+    if (!this.props.error) {
+      return null;
+    }
+    return <p className="error-message">Failed to fetch data: {this.props.error.toString()}</p>;
   }
+}
 
+export class Dashboard extends React.Component {
   render() {
     return (
       <div className="dashboard">
         <h1>Beerserver Dashboard</h1>
+        <ErrorMessage error={this.props.error} />
         <ChannelList channels={this.props.channels} />
       </div>
     );

@@ -8,7 +8,7 @@
     "js": "browserify -t babelify assets/js/index.js -o static/js/index.js",
     "js:watch": "watchify -t babelify assets/js/index.js -o static/js/index.js",
     "css": "lessc assets/css/index.less static/css/index.css",
-    "copy": "mkdir -p static/{js,css} && cp assets/index.html static/",
+    "copy": "mkdir -p static/js && mkdir -p static/css && cp assets/index.html static/",
     "eslint": "eslint assets/js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "npm run build"

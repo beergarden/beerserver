@@ -10,6 +10,7 @@ An API server for home brewery.
 - Node, NPM
 - Heroku Toolbelt (for deployment to Heroku)
 - MongoDB
+- [flow](http://flowtype.org/) (optional)
 
 ## Usage
 
@@ -77,6 +78,12 @@ or
 
 ```
 npm start
+```
+
+Statically check types:
+
+```
+npm run flow
 ```
 
 ## Test

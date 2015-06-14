@@ -1,3 +1,7 @@
+@beer-yellow: #EC3;
+@red: #E55;
+@light-grey: #ccc;
+
 .axis {
 	fill: none;
 	stroke: #000;
@@ -12,35 +16,40 @@
 }
 
 .axis line {
-	stroke: #ccc;
+	stroke: @light-grey;
 }
 
 .axis path {
-	stroke: #ccc;
+	stroke: @light-grey;
 }
 
 .bar:hover {
-	fill: #E55;
+	fill: @red;
+}
+
+.dot {
+  fill: @beer-yellow;
 }
 
 .dot:hover {
-	fill: #E55;
+	fill: @red;
 }
 
 .area:hover {
-	fill: #E55;
+	fill: @red;
 }
 
 .line {
 	padding: 10px;
+  stroke: @beer-yellow;
 }
 
 .line:hover {
-	stroke: #E55;
+	stroke: @red;
 }
 
 .arc path:hover {
-	fill: #E55;
+	fill: @red;
 }
 
 .arc text {

@@ -3,9 +3,12 @@
   "version": "0.0.1",
   "description": "Cheers!",
   "scripts": {
-    "start": "npm run copy && watchify -t babelify assets/js/index.js -o static/js/index.js",
-    "build": "npm run copy && browserify -t babelify assets/js/index.js -o static/js/index.js",
-    "copy": "mkdir -p static/{js,css} && cp assets/index.html static/ && cp -r assets/css static/",
+    "start": "npm run copy && npm run css && npm run js:watch",
+    "build": "npm run copy && npm run css && npm run js",
+    "js": "browserify -t babelify assets/js/index.js -o static/js/index.js",
+    "js:watch": "watchify -t babelify assets/js/index.js -o static/js/index.js",
+    "css": "lessc assets/css/index.less static/css/index.css",
+    "copy": "mkdir -p static/{js,css} && cp assets/index.html static/",
     "eslint": "eslint assets/js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postinstall": "npm run build"
@@ -39,6 +42,7 @@
     "d3": "^3.5.5",
     "eslint": "^0.22.1",
     "eslint-plugin-react": "^2.5.0",
+    "less": "^2.5.1",
     "watchify": "^3.2.2"
   }
 }

@@ -4,9 +4,7 @@
 var path = require('path');
 
 var babelOptions = {
-  optional: [
-    'es7.asyncFunctions'
-  ]
+  optional: ['runtime', 'es7.asyncFunctions']
 };
 
 module.exports = {

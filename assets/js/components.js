@@ -1,11 +1,17 @@
+/* @flow */
+// JSX complication requires a reference to `React` and flow doesn't understand
+// `import React, { Component, PropTypes } from 'react';`.
 import React from 'react';
+var { Component, PropTypes } = React;
 import d3 from 'd3';
 import { LineChart } from 'react-d3-components';
-import { formatDateTime, formatDate, formatTime } from './date-utils';
 
-export class DatapointChart {
-  formatTick(d) {
-    const hours = d.getHours();
+import { formatDateTime, formatDate, formatTime } from './date-utils';
+import { ChannelShape, DatapointShape } from './prop-types';
+
+export class DatapointChart extends Component {
+  formatTick(d: Date): string {
+    var hours = d.getHours();
     if (hours === 0) {
       return formatDate(d);
     } else {
@@ -13,29 +19,29 @@ export class DatapointChart {
     }
   }
 
-  render() {
-    const values = this.props.datapoints.map((d) => {
+  render(): any {
+    var values = this.props.datapoints.map((d) => {
       return { x: d.at, y: d.value };
     });
-    const data = { label: '', values };
+    var data = { label: '', values };
 
-    const width = 800;
-    const height = 200;
-    const margin = { top: 10, bottom: 20, left: 50, right: 20 };
+    var width = 800;
+    var height = 200;
+    var margin = { top: 10, bottom: 20, left: 50, right: 20 };
 
-    const xs = values.map((v) => v.x);
-    const minX = Math.min(...xs);
-    const maxX = Math.max(...xs);
+    var xs = values.map((v) => v.x);
+    var minX = Math.min(...xs);
+    var maxX = Math.max(...xs);
 
-    const xScale = d3.time.scale()
+    var xScale = d3.time.scale()
       .domain([minX, maxX])
       .range([0, width - margin.left - margin.right]);
-    const xAxis = { tickFormat: this.formatTick.bind(this) };
-    const yAxis = { label: 'Deg C' };
+    var xAxis = { tickFormat: this.formatTick.bind(this) };
+    var yAxis = { label: 'Deg C' };
 
-    const tooltipHtml = (_, data) => {
-      const date = formatDateTime(data.x);
-      return `${data.y} at ${date}`;
+    var tooltipHtml = (_, d) => {
+      var date = formatDateTime(d.x);
+      return `${d.y} at ${date}`;
     };
 
     return (
@@ -50,49 +56,73 @@ export class DatapointChart {
     );
   }
 }
+// TODO: Use `static get propTypes()` as soon as flow supports static getter.
+DatapointChart.propTypes = {
+  datapoints: PropTypes.arrayOf(DatapointShape)
+};
 
-export class Channel extends React.Component {
-  render() {
-    const channel = this.props.channel;
-    const url = `/channels/${channel.id}/datapoints`;
-    const latest = channel.datapoints[channel.datapoints.length - 1];
-    const date = formatDateTime(latest.at);
+export class Channel extends Component {
+  render(): any {
+    var channel = this.props.channel;
+    var url = `/channels/${channel.id}/datapoints`;
+    var content;
+
+    if (channel.datapoints) {
+      var latest = channel.datapoints[channel.datapoints.length - 1];
+      var date = formatDateTime(latest.at);
+      content = (
+        <div>
+          <p>
+            <span className="latest">Latest: {latest.value} at {date}</span>
+            <span> </span>
+            <span className="json"><a href={url}>JSON</a></span>
+          </p>
+          <DatapointChart datapoints={channel.datapoints} />
+        </div>
+      );
+    } else {
+      content = <p className="loading">Loading...</p>;
+    }
     return (
       <div className="channel">
         <h2 className="name">{channel.name}</h2>
-        <p>
-          <span className="latest">Latest: {latest.value} at {date}</span>
-          <span> </span>
-          <span className="json"><a href={url}>JSON</a></span>
-        </p>
-        <DatapointChart datapoints={channel.datapoints} />
+        {content}
       </div>
     );
   }
 }
+Channel.propTypes = {
+  channel: ChannelShape.isRequired
+};
 
-export class ChannelList extends React.Component {
-  render() {
+export class ChannelList extends Component {
+  render(): any {
     if (!this.props.channels) {
       return null;
     }
 
-    const listItems = this.props.channels.map((channel) => <Channel channel={channel} key={channel.id} />);
+    var listItems = this.props.channels.map((channel) => <Channel channel={channel} key={channel.id} />);
     return <div className="channel-list">{listItems}</div>;
   }
 }
+ChannelList.propTypes = {
+  channels: PropTypes.arrayOf(ChannelShape)
+};
 
-export class ErrorMessage extends React.Component {
-  render() {
+export class ErrorMessage extends Component {
+  render(): any {
     if (!this.props.error) {
       return null;
     }
     return <p className="error-message">Failed to fetch data: {this.props.error.toString()}</p>;
   }
 }
+ErrorMessage.propTypes = {
+  error: PropTypes.instanceOf(Error)
+};
 
-export class Dashboard extends React.Component {
-  render() {
+export class Dashboard extends Component {
+  render(): any {
     return (
       <div className="dashboard">
         <h1>Beerserver Dashboard</h1>
@@ -102,3 +132,7 @@ export class Dashboard extends React.Component {
     );
   }
 }
+Dashboard.propTypes = {
+  channels: PropTypes.arrayOf(ChannelShape),
+  error: PropTypes.instanceOf(Error)
+};

@@ -68,18 +68,22 @@ export class Channel extends Component {
     var content;
 
     if (channel.datapoints) {
-      var latest = channel.datapoints[channel.datapoints.length - 1];
-      var date = formatDateTime(latest.at);
-      content = (
-        <div>
-          <p>
-            <span className="latest">Latest: {latest.value} at {date}</span>
-            <span> </span>
-            <span className="json"><a href={url}>JSON</a></span>
-          </p>
-          <DatapointChart datapoints={channel.datapoints} />
-        </div>
-      );
+      if (channel.datapoints.length > 0) {
+        var latest = channel.datapoints[channel.datapoints.length - 1];
+        var date = formatDateTime(latest.at);
+        content = (
+          <div>
+            <p>
+              <span className="latest">Latest: {latest.value} at {date}</span>
+              <span> </span>
+              <span className="json"><a href={url}>JSON</a></span>
+            </p>
+            <DatapointChart datapoints={channel.datapoints} />
+          </div>
+        );
+      } else {
+        content = <p>No data</p>;
+      }
     } else {
       content = <p className="loading">Loading...</p>;
     }

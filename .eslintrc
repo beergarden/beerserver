@@ -8,6 +8,9 @@
     "modules": true,
     "jsx": true
   },
+  "plugins": [
+    "react"
+  ],
   "rules": {
     "quotes": [2, "single"],
     "no-use-before-define": [2, "nofunc"]

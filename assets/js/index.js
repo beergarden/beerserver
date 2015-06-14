@@ -1,10 +1,10 @@
 /* @flow */
+/* global require */
 require('whatwg-fetch');
-// require('babel-runtime/core-js');
-// require('babel-runtime/regenerator');
 import React from 'react';
 
 import { Dashboard } from './components';
+import type { Channel } from './models';
 
 (async () => {
   try {
@@ -16,7 +16,6 @@ import { Dashboard } from './components';
       renderDashboard(channels);
     });
   } catch (e) {
-    console.error(e);
     renderError(e);
   }
 })();

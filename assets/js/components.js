@@ -39,9 +39,9 @@ export class DatapointChart extends Component {
     var xAxis = { tickFormat: this.formatTick.bind(this) };
     var yAxis = { label: 'Deg C' };
 
-    var tooltipHtml = (_, data) => {
-      var date = formatDateTime(data.x);
-      return `${data.y} at ${date}`;
+    var tooltipHtml = (_, d) => {
+      var date = formatDateTime(d.x);
+      return `${d.y} at ${date}`;
     };
 
     return (
@@ -106,7 +106,7 @@ export class ChannelList extends Component {
   }
 }
 ChannelList.propTypes = {
-  channels: PropTypes.arrayOf(ChannelShape).isRequired
+  channels: PropTypes.arrayOf(ChannelShape)
 };
 
 export class ErrorMessage extends Component {

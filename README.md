@@ -80,6 +80,12 @@ or
 npm start
 ```
 
+Statically check common errors:
+
+```
+npm run eslint
+```
+
 Statically check types:
 
 ```

@@ -3,11 +3,7 @@
 
 var path = require('path');
 
-var babelOptions = {
-  optional: [
-    'es7.asyncFunctions'
-  ]
-};
+var babelOptions = {};
 
 module.exports = {
   entry: './assets/js/index.js',

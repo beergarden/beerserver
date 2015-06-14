@@ -1,0 +1,10 @@
+[ignore]
+.*/node_modules/webpack/.*
+
+[include]
+../node_modules
+
+[libs]
+../assets/interfaces
+
+[options]

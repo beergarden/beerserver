@@ -1,4 +1,5 @@
-import 'whatwg-fetch';
+/* @flow */
+import _ from 'whatwg-fetch';
 import React from 'react';
 
 import { Dashboard } from './components';
@@ -7,21 +8,21 @@ fetchChannels()
   .then(renderDashboard)
   .catch(renderError);
 
-function fetchChannels() {
+function fetchChannels(): Promise<Array<Channel>> {
   return fetch('/channels')
-    .then((response) => {
+    .then((response: Response) => {
       if (response.ok) {
         return response.json();
       } else {
-        return response.text().then((t) => Promise.reject(new Error(t)));
+        return response.text().then((t: string) => Promise.reject(new Error(t)));
       }
     })
     .then((channels) => Promise.all(channels.map(fetchDatapoints)));
 }
 
-function fetchDatapoints(channel) {
+function fetchDatapoints(channel: Channel): Promise<Channel> {
   return fetch(`/channels/${channel.id}/datapoints`)
-    .then((response) => response.json())
+    .then((response: Response) => response.json())
     .then((datapoints) => {
       channel.datapoints = datapoints.map((d) => {
         return { at: new Date(d.at), value: d.value };
@@ -30,7 +31,7 @@ function fetchDatapoints(channel) {
     });
 }
 
-function renderDashboard(channels) {
+function renderDashboard(channels: Array<Channel>) {
   React.render(
     <Dashboard channels={channels} />,
     document.getElementById('world')

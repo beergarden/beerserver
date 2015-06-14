@@ -83,7 +83,7 @@ npm start
 Statically check types:
 
 ```
-npm run flow
+flow
 ```
 
 ## Test

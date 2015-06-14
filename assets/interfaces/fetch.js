@@ -1,6 +1,6 @@
 declare class Response {
   ok: boolean;
-  json(): Promise<Object>;
+  json(): Promise<any>;
   text(): Promise<string>;
 }
 

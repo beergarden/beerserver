@@ -2,7 +2,7 @@
 // JSX complication requires a reference to `React` and flow doesn't understand
 // `import React, { Component, PropTypes } from 'react';`.
 import React from 'react';
-const { Component, PropTypes } = React;
+var { Component, PropTypes } = React;
 import d3 from 'd3';
 import { LineChart } from 'react-d3-components';
 
@@ -11,7 +11,7 @@ import { ChannelShape, DatapointShape } from './prop-types';
 
 export class DatapointChart extends Component {
   formatTick(d: Date): string {
-    const hours = d.getHours();
+    var hours = d.getHours();
     if (hours === 0) {
       return formatDate(d);
     } else {
@@ -20,27 +20,27 @@ export class DatapointChart extends Component {
   }
 
   render(): any {
-    const values = this.props.datapoints.map((d) => {
+    var values = this.props.datapoints.map((d) => {
       return { x: d.at, y: d.value };
     });
-    const data = { label: '', values };
+    var data = { label: '', values };
 
-    const width = 800;
-    const height = 200;
-    const margin = { top: 10, bottom: 20, left: 50, right: 20 };
+    var width = 800;
+    var height = 200;
+    var margin = { top: 10, bottom: 20, left: 50, right: 20 };
 
-    const xs = values.map((v) => v.x);
-    const minX = Math.min(...xs);
-    const maxX = Math.max(...xs);
+    var xs = values.map((v) => v.x);
+    var minX = Math.min(...xs);
+    var maxX = Math.max(...xs);
 
-    const xScale = d3.time.scale()
+    var xScale = d3.time.scale()
       .domain([minX, maxX])
       .range([0, width - margin.left - margin.right]);
-    const xAxis = { tickFormat: this.formatTick.bind(this) };
-    const yAxis = { label: 'Deg C' };
+    var xAxis = { tickFormat: this.formatTick.bind(this) };
+    var yAxis = { label: 'Deg C' };
 
-    const tooltipHtml = (_, data) => {
-      const date = formatDateTime(data.x);
+    var tooltipHtml = (_, data) => {
+      var date = formatDateTime(data.x);
       return `${data.y} at ${date}`;
     };
 
@@ -63,19 +63,30 @@ DatapointChart.propTypes = {
 
 export class Channel extends Component {
   render(): any {
-    const channel = this.props.channel;
-    const url = `/channels/${channel.id}/datapoints`;
-    const latest = channel.datapoints[channel.datapoints.length - 1];
-    const date = formatDateTime(latest.at);
+    var channel = this.props.channel;
+    var url = `/channels/${channel.id}/datapoints`;
+    var content;
+
+    if (channel.datapoints) {
+      var latest = channel.datapoints[channel.datapoints.length - 1];
+      var date = formatDateTime(latest.at);
+      content = (
+        <div>
+          <p>
+            <span className="latest">Latest: {latest.value} at {date}</span>
+            <span> </span>
+            <span className="json"><a href={url}>JSON</a></span>
+          </p>
+          <DatapointChart datapoints={channel.datapoints} />
+        </div>
+      );
+    } else {
+      content = <p className="loading">Loading...</p>;
+    }
     return (
       <div className="channel">
         <h2 className="name">{channel.name}</h2>
-        <p>
-          <span className="latest">Latest: {latest.value} at {date}</span>
-          <span> </span>
-          <span className="json"><a href={url}>JSON</a></span>
-        </p>
-        <DatapointChart datapoints={channel.datapoints} />
+        {content}
       </div>
     );
   }
@@ -90,7 +101,7 @@ export class ChannelList extends Component {
       return null;
     }
 
-    const listItems = this.props.channels.map((channel) => <Channel channel={channel} key={channel.id} />);
+    var listItems = this.props.channels.map((channel) => <Channel channel={channel} key={channel.id} />);
     return <div className="channel-list">{listItems}</div>;
   }
 }
@@ -107,7 +118,7 @@ export class ErrorMessage extends Component {
   }
 }
 ErrorMessage.propTypes = {
-  channels: PropTypes.arrayOf(ChannelShape),
+  error: PropTypes.instanceOf(Error)
 };
 
 export class Dashboard extends Component {
@@ -121,3 +132,7 @@ export class Dashboard extends Component {
     );
   }
 }
+Dashboard.propTypes = {
+  channels: PropTypes.arrayOf(ChannelShape),
+  error: PropTypes.instanceOf(Error)
+};

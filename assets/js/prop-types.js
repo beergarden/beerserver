@@ -1,13 +1,13 @@
 /* @flow */
 import { PropTypes } from 'react';
 
-export const DatapointShape = PropTypes.shape({
+export var DatapointShape = PropTypes.shape({
   at: PropTypes.instanceOf(Date).isRequired,
   value: PropTypes.number.isRequired
 });
 
-export const ChannelShape = PropTypes.shape({
+export var ChannelShape = PropTypes.shape({
   id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  datapoints: PropTypes.arrayOf(DatapointShape).isRequired
+  datapoints: PropTypes.arrayOf(DatapointShape)
 });

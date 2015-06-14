@@ -1,34 +1,42 @@
 /* @flow */
-import _ from 'whatwg-fetch';
+require('whatwg-fetch');
+// require('babel-runtime/core-js');
+// require('babel-runtime/regenerator');
 import React from 'react';
 
 import { Dashboard } from './components';
 
-fetchChannels()
-  .then(renderDashboard)
-  .catch(renderError);
+(async () => {
+  try {
+    var channels = await fetchChannels();
+    renderDashboard(channels);
 
-function fetchChannels(): Promise<Array<Channel>> {
-  return fetch('/channels')
-    .then((response: Response) => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        return response.text().then((t: string) => Promise.reject(new Error(t)));
-      }
-    })
-    .then((channels) => Promise.all(channels.map(fetchDatapoints)));
+    channels.forEach(async (channel) => {
+      await fetchDatapoints(channel);
+      renderDashboard(channels);
+    });
+  } catch (e) {
+    console.error(e);
+    renderError(e);
+  }
+})();
+
+async function fetchChannels(): Promise<Array<Channel>> {
+  var response = await fetch('/channels');
+  if (!response.ok) {
+    var errorMessage = await response.text();
+    throw new Error(errorMessage);
+  }
+  return await response.json();
 }
 
-function fetchDatapoints(channel: Channel): Promise<Channel> {
-  return fetch(`/channels/${channel.id}/datapoints`)
-    .then((response: Response) => response.json())
-    .then((datapoints) => {
-      channel.datapoints = datapoints.map((d) => {
-        return { at: new Date(d.at), value: d.value };
-      });
-      return channel;
-    });
+async function fetchDatapoints(channel: Channel): Promise<Channel> {
+  var response = await fetch(`/channels/${channel.id}/datapoints`);
+  var datapoints = await response.json();
+  channel.datapoints = datapoints.map((d) => {
+    return { at: new Date(d.at), value: d.value };
+  });
+  return channel;
 }
 
 function renderDashboard(channels: Array<Channel>) {
@@ -38,7 +46,7 @@ function renderDashboard(channels: Array<Channel>) {
   );
 }
 
-function renderError(error) {
+function renderError(error: Error) {
   React.render(
     <Dashboard error={error} />,
     document.getElementById('world')

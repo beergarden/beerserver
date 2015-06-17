@@ -20,7 +20,7 @@ func NewMailer(username string, password string) Mailer {
 }
 
 func (mailer *mailer) SendNotification(channel *Channel, datapoint *Datapoint) error {
-	if len(channel.Email) > 0 {
+	if len(channel.Email) == 0 {
 		return nil
 	}
 	log.Printf("Sending notification to %v", channel.Email)

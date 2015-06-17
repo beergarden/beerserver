@@ -8,15 +8,17 @@ import (
 )
 
 // -- Routes
+// TODO: Store these in context.
 type Routes struct {
 	channelStore   ChannelStore
 	datapointStore DatapointStore
+	mailer         Mailer
 }
 
-func NewRoutes(db *mgo.Database) *Routes {
+func NewRoutes(db *mgo.Database, mailer Mailer) *Routes {
 	channelStore := &channelStore{db}
 	datapointStore := &datapointStore{db}
-	return &Routes{channelStore, datapointStore}
+	return &Routes{channelStore, datapointStore, mailer}
 }
 
 func (routes *Routes) GetChannel(w http.ResponseWriter, r *http.Request, params RouteParams) error {
@@ -107,6 +109,13 @@ func (routes *Routes) CreateDatapoint(w http.ResponseWriter, r *http.Request, pa
 		return err
 	}
 
+	// TODO: Get address from channel?
+	address := "shuhei.kagawa@gmail.com"
+	if datapoint.Value > 26.0 {
+		log.Printf("Sending notification to %v", address)
+		go routes.sendNotification(address, channelId, datapoint)
+	}
+
 	w.WriteHeader(201)
 	return sendJSON(w, datapoint)
 }
@@ -126,4 +135,19 @@ func (routes *Routes) checkChannelId(w http.ResponseWriter, r *http.Request, par
 func sendJSON(w http.ResponseWriter, data interface{}) error {
 	w.Header().Add("Content-Type", "application/json")
 	return json.NewEncoder(w).Encode(data)
+}
+
+func (routes *Routes) sendNotification(to string, channelId string, datapoint *Datapoint) error {
+	channel, err := routes.channelStore.Get(channelId)
+	if err != nil {
+		log.Printf("Failed to get channel for id: %v", channelId)
+		log.Println(err)
+		return err
+	}
+
+	err = routes.mailer.SendNotification(to, channel, datapoint)
+	if err != nil {
+		log.Printf("Failed to send mail to %v", to)
+	}
+	return err
 }

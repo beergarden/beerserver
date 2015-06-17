@@ -33,8 +33,13 @@ func main() {
 	// ??
 	session.SetMode(mgo.Monotonic, true)
 
+	// Email client.
+	sgUsername := os.Getenv("SENDGRID_USERNAME")
+	sgPassword := os.Getenv("SENDGRID_PASSWORD")
+	mailer := NewMailer(sgUsername, sgPassword)
+
 	// Set up router.
-	routes := NewRoutes(session.DB(dbName))
+	routes := NewRoutes(session.DB(dbName), mailer)
 	router := NewRouter("static")
 	router.GET("/channels", routes.GetChannels)
 	router.POST("/channels", routes.CreateChannel)

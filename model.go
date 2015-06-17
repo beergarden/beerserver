@@ -11,8 +11,9 @@ const DatapointCollectionName = "datapoints"
 
 // -- Channel
 type Channel struct {
-	Id   bson.ObjectId `bson:"_id" json:"id"`
-	Name string        `bson:"name" json:"name"`
+	Id    bson.ObjectId `bson:"_id" json:"id"`
+	Name  string        `bson:"name" json:"name"`
+	Email string        `bson:"email" json:"email"`
 }
 
 type Channels []Channel

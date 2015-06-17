@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/sendgrid/sendgrid-go"
+	"log"
 )
 
 type mailer struct {
@@ -10,7 +11,7 @@ type mailer struct {
 }
 
 type Mailer interface {
-	SendNotification(to string, channel *Channel, datapoint *Datapoint) error
+	SendNotification(channel *Channel, datapoint *Datapoint) error
 }
 
 func NewMailer(username string, password string) Mailer {
@@ -18,16 +19,25 @@ func NewMailer(username string, password string) Mailer {
 	return &mailer{sg}
 }
 
-func (mailer *mailer) SendNotification(to string, channel *Channel, datapoint *Datapoint) error {
+func (mailer *mailer) SendNotification(channel *Channel, datapoint *Datapoint) error {
+	if len(channel.Email) > 0 {
+		return nil
+	}
+	log.Printf("Sending notification to %v", channel.Email)
+
 	// TODO: Stop hardcoding.
 	subject := fmt.Sprintf("[beerserver] Over limit: %f/26.0 @%s", datapoint.Value, channel.Name)
 	text := fmt.Sprintf("Hurry up and cool down your beer!")
 
 	mail := sendgrid.NewMail()
-	mail.AddTo(to)
+	mail.AddTo(channel.Email)
 	mail.SetSubject(subject)
 	mail.SetText(text)
 	mail.SetFrom("notification@beerserver.local")
 
-	return mailer.client.Send(mail)
+	err := mailer.client.Send(mail)
+	if err != nil {
+		log.Printf("Failed to send mail to %v", channel.Email)
+	}
+	return err
 }

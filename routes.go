@@ -109,11 +109,8 @@ func (routes *Routes) CreateDatapoint(w http.ResponseWriter, r *http.Request, pa
 		return err
 	}
 
-	// TODO: Get address from channel?
-	address := "shuhei.kagawa@gmail.com"
 	if datapoint.Value > 26.0 {
-		log.Printf("Sending notification to %v", address)
-		go routes.sendNotification(address, channelId, datapoint)
+		go routes.sendNotification(channelId, datapoint)
 	}
 
 	w.WriteHeader(201)
@@ -137,7 +134,7 @@ func sendJSON(w http.ResponseWriter, data interface{}) error {
 	return json.NewEncoder(w).Encode(data)
 }
 
-func (routes *Routes) sendNotification(to string, channelId string, datapoint *Datapoint) error {
+func (routes *Routes) sendNotification(channelId string, datapoint *Datapoint) error {
 	channel, err := routes.channelStore.Get(channelId)
 	if err != nil {
 		log.Printf("Failed to get channel for id: %v", channelId)
@@ -145,9 +142,5 @@ func (routes *Routes) sendNotification(to string, channelId string, datapoint *D
 		return err
 	}
 
-	err = routes.mailer.SendNotification(to, channel, datapoint)
-	if err != nil {
-		log.Printf("Failed to send mail to %v", to)
-	}
-	return err
+	return routes.mailer.SendNotification(channel, datapoint)
 }

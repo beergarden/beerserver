@@ -21,9 +21,10 @@ func NewMailer(username string, password string) Mailer {
 
 func (mailer *mailer) SendNotification(channel *Channel, datapoint *Datapoint) error {
 	if len(channel.Email) == 0 {
+		log.Printf("No notification address for channel %v", channel.Name)
 		return nil
 	}
-	log.Printf("Sending notification to %v", channel.Email)
+	log.Printf("Sending notification for %v to %v", channel.Name, channel.Email)
 
 	// TODO: Stop hardcoding.
 	subject := fmt.Sprintf("[beerserver] Over limit: %f/26.0 @%s", datapoint.Value, channel.Name)
